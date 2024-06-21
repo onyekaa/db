@@ -1,0 +1,19 @@
+.App {
+    text-align: center;
+}
+
+.divider {
+    height: 1px;
+    background: #ddd;
+    border: 0;
+    margin: 25px 0;
+}
+
+.search {
+    padding: 20px 0;
+}
+
+.search-box {
+   padding: 5px;
+   margin-left: 10px;
+}
