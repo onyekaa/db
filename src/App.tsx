@@ -14,11 +14,12 @@ import "./ony-theme.css";
 const App = () => {
 
 	const apiURL = 'https://restcountries.com/v3.1/all?fields=name,flag,population,languages,currencies';
+	const gridRef = useRef<AgGridReact>(null);
 
 	// Row Data: The data to be displayed.
 	const [rowData, setRowData] = useState<any[]>([]);
-	const gridRef = useRef<AgGridReact>(null);
-
+	// let selectedNodes = gridRef?..getSelectedNodes();
+	const [summary, setSummary] = useState({})
 	// Column Definitions
 	const [colDefs, setColumnDefs] =  useState<
 			(ColDef<any, any> | ColGroupDef<any>)[]
@@ -56,8 +57,7 @@ const App = () => {
 
 	const getSelectedRowData =  useCallback((event: RowSelectedEvent) => {
 		let selectedData = gridRef.current!.api.getSelectedRows();
-		console.log(`Selected Nodes:\n${JSON.stringify(selectedData[0].name)}`);
-		return selectedData;
+		setSummary(selectedData[0]);
 	}, []);
 
 	const onFilterTextBoxChanged = useCallback(() => {
@@ -68,13 +68,10 @@ const App = () => {
 	  }, []);
 
 
-
-
 	const ready = useCallback((params: GridReadyEvent) => {
 		fetch(apiURL)
 			.then((resp) => resp.json())
 			.then((data) => {
-				// console.log(data)
 				setRowData(data.map(
 					country => ({
 						'name': country.name.common,
@@ -95,9 +92,9 @@ const App = () => {
 				className="ag-theme-custom"
 			>
 				<h1>Country Information</h1>
-				<h3>A little component, by Onyeka Aghanenu.</h3>
+				<h3>For viewing and sorting country info.</h3>
 				<p>
-					<a href="http://github.com/onyekaa">View source on Github</a>
+					<a href="http://github.com/onyekaa/countries-grid">View source on Github</a>
 				</p>
 				<hr className="divider"/>
 				<div className="search">
@@ -111,6 +108,14 @@ const App = () => {
 						/>
 					</label>
 				</div>
+
+				{ (Object.keys(summary).length) ?
+					<div className="selected">
+						You selected:
+						<p>
+							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']}.
+						</p>
+					</div>: ''}
 				<AgGridReact
 					ref={gridRef}
 					pagination={true}
