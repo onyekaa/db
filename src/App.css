@@ -16,10 +16,10 @@ html, body {
 }
 
 .search-box {
-    padding: 8px 15px;
+    padding: 8px 12px;
     margin-left: 10px;
     border-radius: 5px;
-    border: 1px solid #8e957c;
+    border: 1px solid var(--ag-border-color);
     background-color: var(--ag-background-color);
 }
 
@@ -31,4 +31,9 @@ html, body {
     border: none;
     margin-bottom: 20px;
     border-radius: 5px;
+    cursor: pointer;
+}
+
+.save-faves:hover {
+    background-color: var(--ag-accent-color);
 }

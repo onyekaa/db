@@ -59,7 +59,6 @@ const App = () => {
 
 	const getSelectedRowData =  useCallback((event) => {
 		let selectedData = event.data;
-
 		if (event.type === 'cellDoubleClicked') { // display more info about the row if it was double clicked
 			setSummary(selectedData);
 		}
@@ -144,16 +143,16 @@ const App = () => {
 							className='search-box'
 						/>
 					</label>
-					<button className="save-faves" onClick={savetoLocalStorage}>
+					<button className="save-faves" onClick={savetoLocalStorage} disabled={likeCount > 0}>
 						❤️ Add {likeCount} Selected to Favourites
 					</button>
 				</div>
 
 				{ (Object.keys(summary).length) ?
 					<div className="selected">
-						You selected:
-						<p>
-							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']} and use the following currencies: {summary['currency']}.
+						You just clicked on:
+						<p style={{ fontSize: '16px'}}>
+							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): <strong>{summary['languages']}</strong>; and use the following currencies: <strong>{summary['currency'].map(c => c.name).join(', ')}</strong>.
 						</p>
 					</div>: ''}
 				<AgGridReact
