@@ -3,8 +3,8 @@ import './App.css';
 import {
 	ColDef,
 	ColGroupDef,
+	FirstDataRenderedEvent,
 	GridReadyEvent,
-	RowSelectedEvent,
 	ValueFormatterParams,
 } from "ag-grid-community";
 import { AgGridReact } from 'ag-grid-react';
@@ -18,23 +18,25 @@ const App = () => {
 
 	// Row Data: The data to be displayed.
 	const [rowData, setRowData] = useState<any[]>([]);
-	// let selectedNodes = gridRef?..getSelectedNodes();
-	const [summary, setSummary] = useState({})
+	const [summary, setSummary] = useState({});
+	const [likeCount, setLikeCount] = useState(0);
+
 	// Column Definitions
 	const [colDefs, setColumnDefs] =  useState<
 			(ColDef<any, any> | ColGroupDef<any>)[]
 		>([
 			{
 				field: "flag",
-				width: 50,
+				width: 70,
 				sortable: false,
 				headerName: '',
-				cellStyle: {fontSize: '20px'}
+				cellStyle: {fontSize: '20px'},
+				checkboxSelection: true,
 			},
 			{
 				field: "name",
 				sort: "asc",
-				cellRenderer: "agGroupCellRenderer"
+				cellRenderer: "agGroupCellRenderer",
 			},
 			{
 				field: "population",
@@ -55,9 +57,15 @@ const App = () => {
 			}
 		]);
 
-	const getSelectedRowData =  useCallback((event: RowSelectedEvent) => {
-		let selectedData = gridRef.current!.api.getSelectedRows();
-		setSummary(selectedData[0]);
+	const getSelectedRowData =  useCallback((event) => {
+		let selectedData = event.data;
+
+		if (event.type === 'cellDoubleClicked') { // display more info about the row if it was double clicked
+			setSummary(selectedData);
+		}
+
+		let length = gridRef.current!.api.getSelectedRows().length;
+		setLikeCount(length);
 	}, []);
 
 	const onFilterTextBoxChanged = useCallback(() => {
@@ -66,7 +74,6 @@ const App = () => {
 		  (document.getElementById("filter-text-box") as HTMLInputElement).value,
 		);
 	  }, []);
-
 
 	const ready = useCallback((params: GridReadyEvent) => {
 		fetch(apiURL)
@@ -84,9 +91,38 @@ const App = () => {
 			});
 	}, []);
 
+	const onFirstDataRendered = useCallback(
+		(params: FirstDataRenderedEvent) => {
+			const nodesToSelect = [];
+			let existing = localStorage.getItem('ag-cache');
+
+			if (existing !== "undefined" && existing?.length) {
+				let parsed = JSON.parse(existing);
+
+				params.api.forEachNode((node) => {
+					parsed.forEach(item => {
+						if ( item.name === node.data.name) {
+							// @ts-ignore
+							nodesToSelect.push(node);
+						}
+					})
+				});
+			}
+			setLikeCount(nodesToSelect.length);
+			params.api.setNodesSelected({ nodes: nodesToSelect, newValue: true });
+		},
+		[],
+	  );
+
+	const savetoLocalStorage = () => {
+		let selectedData = gridRef.current!.api.getSelectedRows();
+		let cacheStringified = JSON.stringify(selectedData);
+		localStorage.setItem("ag-cache", cacheStringified);
+	}
+
 
 	return (
-		<div style={{ width: "100%", height: "100%" }}>
+		<div className="App" style={{ width: "100%", height: "100%" }}>
 			<div
 				style={{ width: "100%", height: "70vh", padding: "20px"}}
 				className="ag-theme-custom"
@@ -94,7 +130,7 @@ const App = () => {
 				<h1>Country Information</h1>
 				<h3>For viewing and sorting country info.</h3>
 				<p>
-					<a href="http://github.com/onyekaa/countries-grid">View source on Github</a>
+					<a href="http://github.com/onyekaa/db">View source on Github</a>
 				</p>
 				<hr className="divider"/>
 				<div className="search">
@@ -107,23 +143,29 @@ const App = () => {
 							className='search-box'
 						/>
 					</label>
+					<button className="save-faves" onClick={savetoLocalStorage}>
+						❤️ Add {likeCount} Selected to Favourites
+					</button>
 				</div>
 
 				{ (Object.keys(summary).length) ?
 					<div className="selected">
 						You selected:
 						<p>
-							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']}.
+							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']} and use the following currencies: {summary['currencies']}.
 						</p>
 					</div>: ''}
 				<AgGridReact
 					ref={gridRef}
 					pagination={true}
-					paginationPageSize={15}
-					rowSelection="single"
-					enableCellTextSelection={true}
-					onRowSelected={getSelectedRowData}
+					paginationPageSize={20}
+					onFirstDataRendered={onFirstDataRendered}
+					rowSelection="multiple"
+					suppressCellFocus={true}
+					suppressRowClickSelection={true}
+					onCellClicked={getSelectedRowData}
 					onSelectionChanged={getSelectedRowData}
+					onCellDoubleClicked={getSelectedRowData}
 					rowData={rowData} columnDefs={colDefs} onGridReady={ready}/>
 			</div>
 		</div>
