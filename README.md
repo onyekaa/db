@@ -21,7 +21,11 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Using the App
 
-You can filter the list by searching in the Search box above the rendered table.
+You can filter/search the list by searching in the Search box above the rendered table.
 
-Clicking on each row item returns a summary of the country info above the table.
-Master/detail couldn't be used as it was a Pro Feature.
+![scrsearch](./src/screenshots/search.png)
+
+Double-clicking on each row item returns a summary of the country info above the table. Master/detail couldn't be used as it was a Pro Feature.
+
+![scrinfo](./src/screenshots/info.png)
+
