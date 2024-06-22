@@ -13,7 +13,7 @@ import "./ony-theme.css";
 
 const App = () => {
 
-	const apiURL = 'https://restcountriess.com/v3.1/all?fields=name,flag,population,languages,currencies';
+	const apiURL = 'https://restcountries.com/v3.1/all?fields=name,flag,population,languages,currencies';
 	const gridRef = useRef<AgGridReact>(null);
 
 	// Row Data: The data to be displayed.
