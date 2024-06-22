@@ -1,5 +1,5 @@
-.App {
-    text-align: center;
+html, body {
+    color: #888;
 }
 
 .divider {
@@ -11,9 +11,24 @@
 
 .search {
     padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 .search-box {
-   padding: 5px;
-   margin-left: 10px;
+    padding: 8px 15px;
+    margin-left: 10px;
+    border-radius: 5px;
+    border: 1px solid #8e957c;
+    background-color: var(--ag-background-color);
+}
+
+.save-faves {
+    padding: 8px 15px;
+    background-color: #8e957c;
+    font-weight: 700;
+    color: #fff;
+    border: none;
+    margin-bottom: 20px;
+    border-radius: 5px;
 }
