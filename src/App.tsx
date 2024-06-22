@@ -13,7 +13,7 @@ import "./ony-theme.css";
 
 const App = () => {
 
-	const apiURL = 'https://restcountries.com/v3.1/all?fields=name,flag,population,languages,currencies';
+	const apiURL = 'https://restcountriess.com/v3.1/all?fields=name,flag,population,languages,currencies';
 	const gridRef = useRef<AgGridReact>(null);
 
 	// Row Data: The data to be displayed.
@@ -88,7 +88,8 @@ const App = () => {
 						'currency': Object.values(country.currencies),
 					})
 				));
-			});
+			})
+			.catch(response => console.log(response));
 	}, []);
 
 	const onFirstDataRendered = useCallback(
@@ -152,7 +153,7 @@ const App = () => {
 					<div className="selected">
 						You selected:
 						<p>
-							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']} and use the following currencies: {summary['currencies']}.
+							<strong>{summary['name']} </strong> {summary['flag']}, with a population of <strong>{summary['population']?.toLocaleString()}</strong> that speak the following language(s): {summary['languages']} and use the following currencies: {summary['currency']}.
 						</p>
 					</div>: ''}
 				<AgGridReact
